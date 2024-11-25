@@ -1,0 +1,24 @@
+<div class="loser">
+    <div class="loser-sections">
+        <div class="user-section">
+            <app-user [user]="user" *ngIf="user != undefined"></app-user>
+            <button class="button" *ngIf="user != undefined" [disabled]="user.monarch" (click)="takeMonarch()">Take monarch</button>
+            <div class="pull-down">
+                <div class="images bordered">
+                    <div class="row bordered" *ngFor="let image of images">
+                        {{image.split('.')[0]}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="players-section">
+
+        </div>
+        <div class="game-section">
+
+            <div class="actions pull-down pull-right">
+                <button class="icon-button red" (click)="restartGame()">R</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,11 @@
+<div class="login">
+  <div class="login-section bordered">
+    <div class="row">
+      <input [(ngModel)]="name" class="input bordered" type="text" placeholder="name">
+      <button class="button" [disabled]="name.length <= 0" (click)="joinGame()">Join</button>
+    </div>
+    <div class="row errored" *ngIf="loginFailed">
+      Name already in use, try another.
+    </div>
+  </div>
+</div>

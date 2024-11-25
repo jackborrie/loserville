@@ -1,0 +1,61 @@
+.user {
+    height: fit-content;
+    width: 100%;
+}
+
+.user-title {
+    display: flex;
+    padding: 0.5rem;
+}
+
+.user-data {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    row-gap: 1rem;
+    min-height: 200px;
+    padding: 1rem;
+
+    justify-content: center;
+    align-items: center;
+}
+
+.monarch {
+    position: absolute;
+    top: 1rem;
+    bottom: 1rem;
+    right: 1rem;
+    left: 1rem;
+    z-index: 1;
+    background-image: url("../../../assets/svg/crown.svg");
+    background-color: var(--background-1);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    filter: grayscale(1) opacity(0.2);
+}
+
+.user-info, .user-commanders {
+    z-index: 2;
+}
+
+.commander-title {
+    background: var(--foreground-0);
+    color: var(--background-0);
+    padding: 0.5rem;
+}
+
+.user-commanders {
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.5rem;
+    flex-grow: 1;
+    max-height: fit-content;
+    padding-bottom: 0.5rem;
+}
+
+.damage {
+    display: flex;
+    align-items: center;
+    padding: 0 0.5rem;
+}
