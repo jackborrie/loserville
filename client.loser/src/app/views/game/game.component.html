@@ -1,23 +1,37 @@
 <div class="loser">
     <div class="loser-sections">
-        <div class="user-section">
-            <app-user [user]="user" *ngIf="user != undefined"></app-user>
-            <button class="button" *ngIf="user != undefined" [disabled]="user.monarch" (click)="takeMonarch()">Take monarch</button>
-            <div class="pull-down">
-                <div class="images bordered">
-                    <div class="row bordered" *ngFor="let image of images">
-                        {{image.split('.')[0]}}
+        <div class="players-section bordered">
+            <app-user [user]="player" [currentUser]="user != undefined && user.id == player.id" style="display: flex" *ngFor="let player of getAllPlayers()"></app-user>
+        </div>
+        <div class="game-section">
+            <div class="log bordered">
+                <div class="game-log">
+                    <span *ngFor="let item of log">
+                        {{item}}
+                    </span>
+                </div>
+            </div>
+            <div class="order bordered">
+                <div class="row bordered order-item" *ngFor="let player of getUsersInOrder()">
+                    #{{player.order}}
+                    <div class="pull-right">
+                        {{player.name}}
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="players-section">
-
-        </div>
-        <div class="game-section">
-
-            <div class="actions pull-down pull-right">
-                <button class="icon-button red" (click)="restartGame()">R</button>
+            <div class="actions pull-down">
+                <button class="button shrinker" (click)="restartGame()">
+                    <span class="long">Upload <i class="ph ph-upload"></i></span>
+                    <span class="short"><i class="ph ph-upload"></i></span>
+                </button>
+                <button class="button shrinker" (click)="restartGame()">
+                    <span class="long">Cards <i class="ph ph-stack"></i></span>
+                    <span class="short"><i class="ph ph-stack"></i></span>
+                </button>
+                <button class="button red shrinker" (click)="restartGame()">
+                    <span class="long">Restart <i class="ph ph-arrow-counter-clockwise"></i></span>
+                    <span class="short"><i class="ph ph-arrow-counter-clockwise"></i></span>
+                </button>
             </div>
         </div>
     </div>

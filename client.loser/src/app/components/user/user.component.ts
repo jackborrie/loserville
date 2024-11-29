@@ -20,7 +20,12 @@ export class UserComponent implements OnInit, OnDestroy {
     @Input()
     public user!: User;
 
+    @Input()
+    public currentUser: boolean = false;
+
     protected players: User[] = [];
+
+    protected currentCommanderIdx = 0;
 
     public constructor(
         private _websocket: WebsocketService
@@ -51,7 +56,7 @@ export class UserComponent implements OnInit, OnDestroy {
 
         if (gradient.length > 1) {
 
-            let output = 'linear-gradient(to right, ';
+            let output = 'linear-gradient(to bottom, ';
 
             for (let gIdx = 0; gIdx < gradient.length; gIdx++) {
                 output += gradient[gIdx];
@@ -66,7 +71,7 @@ export class UserComponent implements OnInit, OnDestroy {
         } else if (gradient.length == 1) {
             return gradient;
         } else {
-            return 'var(--foreground-0)';
+            return 'var(--background-0)';
         }
     }
 
@@ -99,5 +104,22 @@ export class UserComponent implements OnInit, OnDestroy {
             this.players = this._websocket.getAllPlayers().filter(s => s.id != this.user.id);
         })
     }
+
+    protected takeMonarch () {
+        this._websocket.sendMessage({type: 'monarch', target_id: this.user?.id});
+    }
+
+    protected changeCurrentCommander (by: number) {
+        this.currentCommanderIdx += by;
+
+        if (this.currentCommanderIdx <= 0) {
+            this.currentCommanderIdx = 0;
+        }
+
+        if (this.currentCommanderIdx > this.user.commanderImages.length - 1) {
+            this.currentCommanderIdx = this.user.commanderImages.length - 1;
+        }
+    }
+
 
 }

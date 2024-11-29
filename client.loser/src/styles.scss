@@ -65,6 +65,10 @@ html, body {
 }
 
 .button, .icon-button {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
     border: var(--border);
     border-radius: var(--border-radius);
     background: var(--background-1);
@@ -73,6 +77,21 @@ html, body {
     height: 38px;
     width: 100%;
     padding: 0 1rem;
+
+    white-space: nowrap;
+
+    .long, .short {
+        flex-direction: row;
+        column-gap: 0.5rem;
+    }
+
+    .long {
+        display: flex;
+    }
+
+    .short {
+        display: none;
+    }
 
     &[disabled] {
         filter: grayscale(0.5);
@@ -83,7 +102,7 @@ html, body {
         background: var(--background-2);
     }
 
-    .red {
+    &.red {
         border-color: var(--red);
         color: var(--red);
     }
@@ -116,4 +135,18 @@ html, body {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+@media only screen and (max-width: 1485px) {
+    .shrinker {
+        max-width: 38px;
+
+        .short {
+            display: flex;
+        }
+
+        .long {
+            display: none;
+        }
+    }
 }

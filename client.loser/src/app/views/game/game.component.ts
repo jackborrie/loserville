@@ -43,8 +43,9 @@ export class GameComponent implements OnInit, OnDestroy {
         let sub = this._websocket.$gameState.subscribe((data: ResponseModel) => {
             this.user = data.user;
             this.players = data.players;
-            this.log = data.gameLog;
             this.images = data.images;
+
+            this.addLog(data.gameLog);
         });
 
         this._subscriptions.add(sub);
@@ -58,7 +59,52 @@ export class GameComponent implements OnInit, OnDestroy {
         this._websocket.sendMessage({type: 'restart'});
     }
 
-    protected takeMonarch () {
-        this._websocket.sendMessage({type: 'monarch', target_id: this.user?.id});
+    protected getAllPlayers (): User[] {
+        let output = [];
+
+        if (this.user != null) {
+            output.push(this.user);
+        }
+
+        if (this.players != null) {
+            output.push(...this.players);
+        }
+
+        return output;
+    }
+
+    protected getUsersInOrder (): User[] {
+        if (this.players == null || this.user == null) {
+            return [];
+        }
+        let toSort: User[] = [this.user];
+
+        toSort.push(...this.players)
+
+        return toSort.sort((a, b) => a.order > b.order ? 1 : -1);
+    }
+
+    private addLog (gameLog: string[]) {
+        this.log = [];
+
+        for (let i = gameLog.length - 1; i >= 0; i--) {
+            this.log.push(this.replaceIds(gameLog[i]));
+        }
+    }
+
+    private replaceIds (text: string): string {
+        const idRegex = /\[.*?\]/g
+
+        if (!idRegex.test(text) || this.user == null || this.players == null) {
+            return text;
+        }
+
+        text = text.replaceAll(`[${this.user.id}]`, this.user.name);
+
+        for (let player of this.players) {
+            text = text.replaceAll(`[${player.id}]`, player.name);
+        }
+
+        return text;
     }
 }

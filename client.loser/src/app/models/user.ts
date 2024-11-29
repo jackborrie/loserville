@@ -11,6 +11,7 @@
     public black: boolean = false;
     public white: boolean = false;
     public colorless: boolean = false;
+    public commanderImages: string[] = [];
 
     public commanderDamage: {[key: string]: number} = {}
 
@@ -27,7 +28,24 @@
         this.white = data.white;
         this.colorless = data.colorless;
         this.commanderDamage = data.commander_damage;
+        this.commanderImages = data.commander_images;
+
+        this.genColors();
     }
 
+    private genColors () {
+        this.genColor('red');
+        this.genColor('blue');
+        this.genColor('green');
+        this.genColor('black');
+        this.genColor('white');
+        this.genColor('white');
+    }
 
+    private genColor (color: string) {
+        let result = Math.floor(Math.random() * (100 - 0 + 1) + 0);
+
+        // @ts-ignore
+        this[color] = result < 50;
+    }
 }

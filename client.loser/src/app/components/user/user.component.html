@@ -1,30 +1,54 @@
-<div class="user bordered">
-    <div class="user-title row" [ngStyle]="{background: genBackground(), color: 'var(--background-0)'}">
-        {{user.name}}
-        <div class="pull-right">
-            #{{user.order}}
+<div class="user" [ngStyle]="{background: genBackground()}">
+    <div class="user-container">
+        <div class="user-info">
+            <div class="user-title row">
+                <div class="player-order">
+                    #{{user.order}}
+                </div>
+                {{user.name}}
+            </div>
+            <div class="user-data">
+                <div *ngIf="user.monarch" class="monarch">
+                    <img src="assets/svg/crown.svg" alt="monarch crown" height="36" width="36">
+                </div>
+                <div class="user-info row center">
+                    <button class="icon-button" (click)="changeLife(-5)" [disabled]="user.life == 0">-5</button>
+                    <button class="icon-button" (click)="changeLife(-1)" [disabled]="user.life == 0">-1</button>
+                    <button class="icon-button" disabled>{{user.life}}</button>
+                    <button class="icon-button" (click)="changeLife(1)">+1</button>
+                    <button class="icon-button" (click)="changeLife(5)">+5</button>
+                </div>
+            </div>
         </div>
-    </div>
-    <div class="user-data">
-        <div *ngIf="user.monarch" class="monarch"></div>
-        <div class="user-info row center">
-            <button class="icon-button" (click)="changeLife(-5)" [disabled]="user.life == 0">-5</button>
-            <button class="icon-button" (click)="changeLife(-1)" [disabled]="user.life == 0">-1</button>
-            <button class="icon-button" disabled>{{user.life}}</button>
-            <button class="icon-button" (click)="changeLife(1)">+1</button>
-            <button class="icon-button" (click)="changeLife(5)">+5</button>
+        <div class="colors">
+
         </div>
+        <button class="button" *ngIf="user != undefined" [disabled]="user.monarch" (click)="takeMonarch()">{{currentUser  ? 'Take' : 'Assign' }} monarch</button>
         <div class="user-commanders bordered" *ngIf="players.length > 0">
             <div class="commander-title row">
-                Player's Commander Damage
+                Commander Damage Against
             </div>
             <div class="damage row" *ngFor="let player of players">
-                Against {{player.name}}:
+                {{player.name}}:
                 <div class="row pull-right">
-                    <button class="icon-button" (click)="changeCommander(player.id, -1)" [disabled]="user.commanderDamage[player.id] == 0">-1</button>
-                    <button class="icon-button" disabled>{{user.commanderDamage[player.id] ?? 0}}</button>
+                    <button class="icon-button" (click)="changeCommander(player.id, -1)" [disabled]="user.commanderDamage[player.id] == null || user.commanderDamage[player.id] == 0">-1</button>
+                    <button class="icon-button" disabled>{{user.commanderDamage[player.id] != null ? user.commanderDamage[player.id] : 0}}</button>
                     <button class="icon-button" (click)="changeCommander(player.id, 1)" [disabled]="user.commanderDamage[player.id] == 21">+1</button>
                 </div>
+            </div>
+        </div>
+        <button class="button" *ngIf="user != undefined" (click)="takeMonarch()">Change commander</button>
+        <div class="commander-zone pull-down" *ngIf="user != null && user.commanderImages.length > 0">
+            <div class="commander">
+                <img src="http://localhost:5271/game/image/commander/{{user.commanderImages[currentCommanderIdx]}}" alt="" width="291">
+            </div>
+            <div class="commander-actions" *ngIf="user.commanderImages.length > 1">
+                <button class="icon-button" [disabled]="currentCommanderIdx <= 0" (click)="changeCurrentCommander(-1)">
+                    <i class="ph ph-caret-left"></i>
+                </button>
+                <button class="icon-button" [disabled]="currentCommanderIdx >= this.user.commanderImages.length - 1" (click)="changeCurrentCommander(1)">
+                    <i class="ph ph-caret-right"></i>
+                </button>
             </div>
         </div>
     </div>
