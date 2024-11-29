@@ -21,7 +21,14 @@
             </div>
         </div>
         <div class="colors">
-
+            <div class="pull-center row">
+                <img ngSrc="assets/svg/red.svg" alt="Red Mana" [width]="20" [height]="20" class="mana" (click)="toggleMana('red')" [ngClass]="{'greyscale': !user.red}">
+                <img ngSrc="assets/svg/white.svg" alt="White Mana" [width]="20" [height]="20" class="mana" (click)="toggleMana('white')" [ngClass]="{'greyscale': !user.white}">
+                <img ngSrc="assets/svg/black.svg" alt="Black Mana" [width]="20" [height]="20" class="mana" (click)="toggleMana('black')" [ngClass]="{'greyscale': !user.black}">
+                <img ngSrc="assets/svg/blue.svg" alt="Blue Mana" [width]="20" [height]="20" class="mana" (click)="toggleMana('blue')" [ngClass]="{'greyscale': !user.blue}">
+                <img ngSrc="assets/svg/green.svg" alt="Green Mana" [width]="20" [height]="20" class="mana" (click)="toggleMana('green')" [ngClass]="{'greyscale': !user.green}">
+                <img ngSrc="assets/svg/colorless.svg" alt="Colorless Mana" [width]="20" [height]="20" class="mana" (click)="toggleMana('colorless')" [ngClass]="{'greyscale': !user.colorless}">
+            </div>
         </div>
         <button class="button" *ngIf="user != undefined" [disabled]="user.monarch" (click)="takeMonarch()">{{currentUser  ? 'Take' : 'Assign' }} monarch</button>
         <div class="user-commanders bordered" *ngIf="players.length > 0">

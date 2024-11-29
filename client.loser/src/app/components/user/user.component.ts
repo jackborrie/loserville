@@ -74,6 +74,18 @@ export class UserComponent implements OnInit, OnDestroy {
         }
     }
 
+    protected toggleMana (manaColor: string) {
+        let message = {
+            type: 'color',
+            target_id: this.user.id
+        }
+
+        // @ts-ignore
+        message[manaColor] = !this.user[manaColor];
+
+        this._websocket.sendMessage(message);
+    }
+
     protected changeLife (amount: number) {
         let lifeMessage = {
             amount: amount,
