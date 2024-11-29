@@ -33,25 +33,24 @@ export class UserComponent implements OnInit, OnDestroy {
     }
 
     public genBackground () {
-        let gradient = [];
-        if (this.user.red) {
-            gradient.push('var(--red)');
+        let gradient = [];if (this.user.red) {
+            gradient.push('#f9aa8f');
         }
         if (this.user.white) {
-            gradient.push('var(--foreground-0)');
+            gradient.push('#fffbd5');
         }
         if (this.user.black) {
             gradient.push('black');
         }
         if (this.user.blue) {
-            gradient.push('var(--blue)');
+            gradient.push('#aae0fa');
         }
         if (this.user.green) {
-            gradient.push('var(--green)');
+            gradient.push('#9bd3ae');
         }
 
         if (this.user.colorless) {
-            gradient.push('var(--foreground-4)');
+            gradient.push('#ccc2c0');
         }
 
         if (gradient.length > 1) {
@@ -71,7 +70,7 @@ export class UserComponent implements OnInit, OnDestroy {
         } else if (gradient.length == 1) {
             return gradient;
         } else {
-            return 'var(--background-0)';
+            return 'var(--foreground-0)';
         }
     }
 
