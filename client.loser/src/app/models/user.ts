@@ -4,7 +4,7 @@
     public life: number = 40;
     public monarch: boolean = false;
     public name: string;
-    public order: boolean = false;
+    public order: number;
     public blue: boolean = false;
     public red: boolean = false;
     public green: boolean = false;

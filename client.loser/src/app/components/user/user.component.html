@@ -1,30 +1,43 @@
-<div class="user bordered">
-    <div class="user-title row" [ngStyle]="{background: genBackground(), color: 'var(--background-0)'}">
-        {{user.name}}
-        <div class="pull-right">
-            #{{user.order}}
+<div class="column">
+    <div class="user bordered">
+        <div class="user-title row" [ngStyle]="{background: genBackground(), color: 'var(--background-0)'}">
+            <div class="name">
+                {{user.name}}
+            </div>
+            <div class="pull-center row">
+                <img ngSrc="/assets/svg/red.svg" alt="Red Mana" [width]="20" [height]="20" class="mana" (click)="toggleMana('red')" [ngClass]="{'greyscale': !user.red}">
+                <img ngSrc="/assets/svg/white.svg" alt="White Mana" [width]="20" [height]="20" class="mana" (click)="toggleMana('white')" [ngClass]="{'greyscale': !user.white}">
+                <img ngSrc="/assets/svg/black.svg" alt="Black Mana" [width]="20" [height]="20" class="mana" (click)="toggleMana('black')" [ngClass]="{'greyscale': !user.black}">
+                <img ngSrc="/assets/svg/blue.svg" alt="Blue Mana" [width]="20" [height]="20" class="mana" (click)="toggleMana('blue')" [ngClass]="{'greyscale': !user.blue}">
+                <img ngSrc="/assets/svg/green.svg" alt="Green Mana" [width]="20" [height]="20" class="mana" (click)="toggleMana('green')" [ngClass]="{'greyscale': !user.green}">
+                <img ngSrc="/assets/svg/colorless.svg" alt="Colorless Mana" [width]="20" [height]="20" class="mana" (click)="toggleMana('colorless')" [ngClass]="{'greyscale': !user.colorless}">
+            </div>
+            <div class="pull-right-lazy user-order">
+                #{{user.order}}
+            </div>
+        </div>
+        <div class="user-data">
+            <div *ngIf="user.monarch" class="monarch"></div>
+            <div class="user-info row center">
+                <button class="icon-button" (click)="changeLife(-5)" [disabled]="user.life == 0">-5</button>
+                <button class="icon-button" (click)="changeLife(-1)" [disabled]="user.life == 0">-1</button>
+                <button class="icon-button" disabled>{{user.life}}</button>
+                <button class="icon-button" (click)="changeLife(1)">+1</button>
+                <button class="icon-button" (click)="changeLife(5)">+5</button>
+            </div>
         </div>
     </div>
-    <div class="user-data">
-        <div *ngIf="user.monarch" class="monarch"></div>
-        <div class="user-info row center">
-            <button class="icon-button" (click)="changeLife(-5)" [disabled]="user.life == 0">-5</button>
-            <button class="icon-button" (click)="changeLife(-1)" [disabled]="user.life == 0">-1</button>
-            <button class="icon-button" disabled>{{user.life}}</button>
-            <button class="icon-button" (click)="changeLife(1)">+1</button>
-            <button class="icon-button" (click)="changeLife(5)">+5</button>
+    <button class="button" *ngIf="user != undefined" [disabled]="user.monarch" (click)="takeMonarch()">{{isCurrentPlayer ? 'Take' : 'Assign' }} monarch</button>
+    <div class="user-commanders bordered" *ngIf="players.length > 0">
+        <div class="commander-title row">
+            Commander Damage Against
         </div>
-        <div class="user-commanders bordered" *ngIf="players.length > 0">
-            <div class="commander-title row">
-                Player's Commander Damage
-            </div>
-            <div class="damage row" *ngFor="let player of players">
-                Against {{player.name}}:
-                <div class="row pull-right">
-                    <button class="icon-button" (click)="changeCommander(player.id, -1)" [disabled]="user.commanderDamage[player.id] == 0">-1</button>
-                    <button class="icon-button" disabled>{{user.commanderDamage[player.id] ?? 0}}</button>
-                    <button class="icon-button" (click)="changeCommander(player.id, 1)" [disabled]="user.commanderDamage[player.id] == 21">+1</button>
-                </div>
+        <div class="damage row" *ngFor="let player of players">
+            {{player.name}}:
+            <div class="row pull-right">
+                <button class="icon-button" (click)="changeCommander(player.id, -1)" [disabled]="user.commanderDamage[player.id] == 0">-1</button>
+                <button class="icon-button" disabled>{{user.commanderDamage[player.id] != null ? user.commanderDamage[player.id] : 0}}</button>
+                <button class="icon-button" (click)="changeCommander(player.id, 1)" [disabled]="user.commanderDamage[player.id] == 21">+1</button>
             </div>
         </div>
     </div>

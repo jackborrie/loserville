@@ -11,6 +11,8 @@ public class SocketService
     private readonly ConcurrentDictionary<string, User> _users = new();
     private static Random rng = new Random();
 
+    private int highestNumber = 0;
+
     private User? _currentMonarch = null;
 
     private List<string> _gameLog =
@@ -18,7 +20,7 @@ public class SocketService
         "A new game has begun."
     ];
 
-    private List<string> _images = [];
+    private List<string> _commanders = [];
 
     public SocketService()
     {
@@ -29,14 +31,16 @@ public class SocketService
         {
             Directory.CreateDirectory(path);
         }
+        
+        var commanderPath = Path.Combine(path, "Commanders");
 
-        var files = Directory.GetFiles(path);
+        var commanderFiles = Directory.GetFiles(commanderPath);
 
-        foreach (var file in files)
+        foreach (var file in commanderFiles)
         {
             var split = file.Split('\\');
 
-            _images.Add(split[^1]);
+            _commanders.Add(split[^1]);
         }
     }
 
@@ -145,9 +149,14 @@ public class SocketService
         return null;
     }
 
-    public async Task AddImage(string filePath)
+    public async Task AddCommanderImage(string filePath)
     {
-        _images.Add(filePath);
+        if (_commanders.Contains(filePath))
+        {
+            return;
+        }
+        
+        _commanders.Add(filePath);
 
         await SendChangesToClients();
     }
@@ -338,6 +347,8 @@ public class SocketService
             _users[o].Order = idx;
 
             idx++;
+
+            highestNumber = idx;
         }
 
         _currentMonarch = null;
@@ -377,9 +388,12 @@ public class SocketService
 
         if (user == null)
         {
+            highestNumber += 1;
+            
             user = new User
             {
-                Name = requestMessage.Name
+                Name = requestMessage.Name,
+                Order = highestNumber
             };
 
             _users[user.Id] = user;
@@ -431,7 +445,7 @@ public class SocketService
 
             response.Players = players.ToList();
             response.GameLog = _gameLog;
-            response.Images = _images.ToList();
+            response.CommanderImages = _commanders.ToList();
 
             var jsonString = JsonSerializer.Serialize(response);
 

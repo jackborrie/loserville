@@ -17,8 +17,8 @@
 }
 
 .user-section, .game-section {
-    min-width: 20%;
-    max-width: 20%;
+    min-width: 300px;
+    max-width: 300px;
     flex-grow: 1;
     min-height: 100%;
 
@@ -27,9 +27,17 @@
     row-gap: 1rem;
 }
 
+.game-section {
+    min-width: 300px;
+    max-width: 300px;
+}
+
 .players-section {
+    display: flex;
+    flex-direction: column;
     flex-grow: 1;
     height: 100%;
+    overflow-y: auto;
 }
 
 .actions {
@@ -39,10 +47,105 @@
 }
 
 .images {
-    height: 300px;
-    width: 100%;
+    //min-height: 200px;
+    max-height: 175px;
+    min-height: calc(75px - 15px);
+    //flex-grow: 1;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
     row-gap: 0.5rem;
+    padding: 0.5rem;
+}
+
+.commander-image {
+    flex-grow: 1;
+    min-height: 383px;
+    height: fit-content;
+    max-height: 383px;
+    overflow: hidden;
+    border-radius: var(--border-radius);
+    padding: 1rem;
+}
+
+.image {
+    min-height: 15px;
+    cursor: default;
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+}
+.image-popup {
+     width: 100%;
+     border-radius: 1.1rem;
+ }
+
+.game-log-container {
+    min-height: 70%;
+    max-height: 70%;
+    overflow-y: auto;
+    overflow-wrap: break-word;
+    padding: 0.5rem;
+}
+
+.game-log {
+    display: flex;
+    font-size: 0.8rem;
+    flex-direction: column-reverse;
+}
+
+.order {
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.5rem;
+    padding: 0.5rem;
+    max-height: fit-content;
+}
+
+.order-item {
+    padding: 0 0.5rem;
+}
+
+.players {
+    width: 100%;
+    height: fit-content;
+    grid-template-columns: repeat( auto-fill, 313px);
+    display: grid;
+    column-gap: 1rem;
+    row-gap: 1rem;
+    //grid-template-rows: repeat(auto-fill, 241.5px);
+}
+
+.player {
+    width: 300px;
+    padding: 0.5rem;
+}
+
+.add-modal {
+    z-index: 9999;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    background: rgba(0, 0, 0, 0.5);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal {
+    background: var(--background-1);
+    display: flex;
+    padding: 1rem;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 300px;
+    min-height: 30px;
+    height: fit-content;
+
 }

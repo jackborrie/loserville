@@ -26,12 +26,17 @@ public class GameController : ControllerBase
         return Ok("Hi");
     }
 
-    [HttpGet("image/{name}")]
-    public async Task<IActionResult> GetImage(string name)
+    [HttpGet("image/{type}/{name}")]
+    public async Task<IActionResult> GetCommanderImage(string type, string name)
     {
-        if (string.IsNullOrEmpty(name))
+        if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(type))
         {
             return BadRequest("Invalid file name");
+        }
+
+        if (type != "commander" && type != "notable")
+        {
+            return BadRequest("Invalid file type");
         }
         
         var contentPath = Environment.CurrentDirectory;
@@ -43,6 +48,20 @@ public class GameController : ControllerBase
         
         var path = Path.Combine(contentPath, "Uploads");
 
+        if (!Directory.Exists(path))
+        {
+            Directory.CreateDirectory(path);
+        }
+
+        if (type == "commander")
+        {
+            path = Path.Combine(path, "Commanders");
+        }
+        else
+        {
+            path = Path.Combine(path, "Notable");
+        }
+        
         if (!Directory.Exists(path))
         {
             Directory.CreateDirectory(path);
@@ -60,12 +79,17 @@ public class GameController : ControllerBase
         return File(b, "image/jpeg");
     }
 
-    [HttpPost("image")]
-    public async Task<IActionResult> UploadImage(IFormFile file)
+    [HttpPost("image/{type}")]
+    public async Task<IActionResult> UploadImage(string type, IFormFile file)
     {
-        if (file == null)
+        if (file == null || string.IsNullOrEmpty(type))
         {
             return BadRequest("Invalid image file");
+        }
+
+        if (type != "commander" && type != "notable")
+        {
+            return BadRequest("Invalid file type");
         }
 
         var contentPath = Environment.CurrentDirectory;
@@ -82,6 +106,20 @@ public class GameController : ControllerBase
             Directory.CreateDirectory(path);
         }
 
+        if (type == "commander")
+        {
+            path = Path.Combine(path, "Commanders");
+        }
+        else
+        {
+            path = Path.Combine(path, "Notable");
+        }
+        
+        if (!Directory.Exists(path))
+        {
+            Directory.CreateDirectory(path);
+        }
+
         // Check the allowed extensions
         var ext = Path.GetExtension(file.FileName);
         if (!_allowedFileTypes.Contains(ext))
@@ -92,6 +130,8 @@ public class GameController : ControllerBase
         var fileNameWithPath = Path.Combine(path, file.FileName);
         await using var stream = new FileStream(fileNameWithPath, FileMode.Create);
         await file.CopyToAsync(stream);
+
+        _socketService.AddCommanderImage(file.FileName);
 
         return Ok();
     }

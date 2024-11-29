@@ -1,6 +1,6 @@
 import {Component, Input, OnDestroy, OnInit, output} from '@angular/core';
 import {User} from "../../models/user";
-import {NgClass, NgForOf, NgIf, NgStyle} from "@angular/common";
+import {NgClass, NgForOf, NgIf, NgOptimizedImage, NgStyle} from "@angular/common";
 import {WebsocketService} from "../../services/websocket.service";
 
 @Component({
@@ -10,7 +10,8 @@ import {WebsocketService} from "../../services/websocket.service";
         NgClass,
         NgStyle,
         NgForOf,
-        NgIf
+        NgIf,
+        NgOptimizedImage
     ],
   templateUrl: './user.component.html',
   styleUrl: './user.component.scss'
@@ -19,6 +20,9 @@ export class UserComponent implements OnInit, OnDestroy {
 
     @Input()
     public user!: User;
+
+    @Input()
+    public isCurrentPlayer: boolean = false;
 
     protected players: User[] = [];
 
@@ -30,23 +34,23 @@ export class UserComponent implements OnInit, OnDestroy {
     public genBackground () {
         let gradient = [];
         if (this.user.red) {
-            gradient.push('var(--red)');
+            gradient.push('#f9aa8f');
         }
         if (this.user.white) {
-            gradient.push('var(--foreground-0)');
+            gradient.push('#fffbd5');
         }
         if (this.user.black) {
             gradient.push('black');
         }
         if (this.user.blue) {
-            gradient.push('var(--blue)');
+            gradient.push('#aae0fa');
         }
         if (this.user.green) {
-            gradient.push('var(--green)');
+            gradient.push('#9bd3ae');
         }
 
         if (this.user.colorless) {
-            gradient.push('var(--foreground-4)');
+            gradient.push('#ccc2c0');
         }
 
         if (gradient.length > 1) {
@@ -92,6 +96,22 @@ export class UserComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
+    }
+
+    protected takeMonarch () {
+        this._websocket.sendMessage({type: 'monarch', target_id: this.user?.id});
+    }
+
+    protected toggleMana (manaColor: string) {
+        let message = {
+            type: 'color',
+            target_id: this.user.id
+        }
+
+        // @ts-ignore
+        message[manaColor] = !this.user[manaColor];
+
+        this._websocket.sendMessage(message);
     }
 
     ngOnInit(): void {

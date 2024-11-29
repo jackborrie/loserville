@@ -5,7 +5,7 @@ export class ResponseModel {
     players: User[] = [];
     user!: User;
     gameLog: string[] = [];
-    images: string[] = [];
+    commanderImages: string[] = [];
 
     public constructor(data: any) {
         this.id = data.id;
@@ -17,7 +17,7 @@ export class ResponseModel {
         }
 
         this.user = new User(data.user);
-        this.images = data.images;
+        this.commanderImages = data.commander_images;
         this.gameLog = data.game_log;
     }
 

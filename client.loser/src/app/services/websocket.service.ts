@@ -26,7 +26,7 @@ export class WebsocketService {
     }
 
     public attemptJoin(name: string) {
-        this.websocket = webSocket('ws://localhost:5271/game/ws');
+        this.websocket = webSocket('ws://163.47.239.93:5271/game/ws');
 
         this.websocket.subscribe ({
             next: (msg: any) => this.handleMessage(msg),

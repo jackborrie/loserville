@@ -1,11 +1,12 @@
 .user {
     height: fit-content;
-    width: 100%;
+    width: 298px;
 }
 
 .user-title {
     display: flex;
     padding: 0.5rem;
+    align-items: center;
 }
 
 .user-data {
@@ -13,7 +14,7 @@
     display: flex;
     flex-direction: column;
     row-gap: 1rem;
-    min-height: 200px;
+    min-height: 85px;
     padding: 1rem;
 
     justify-content: center;
@@ -22,17 +23,16 @@
 
 .monarch {
     position: absolute;
-    top: 1rem;
-    bottom: 1rem;
+    top: 0;
+    bottom: 5rem;
     right: 1rem;
     left: 1rem;
     z-index: 1;
     background-image: url("../../../assets/svg/crown.svg");
-    background-color: var(--background-1);
+    //background-color: var(--background-1);
     background-repeat: no-repeat;
     background-position: center;
-    background-size: cover;
-    filter: grayscale(1) opacity(0.2);
+    background-size: contain;
 }
 
 .user-info, .user-commanders {
@@ -45,11 +45,23 @@
     padding: 0.5rem;
 }
 
+.greyscale {
+    filter: grayscale(1);
+}
+
+.mana {
+    cursor: pointer;
+}
+
+.name, .user-order {
+    color: white;
+    mix-blend-mode: difference;
+}
+
 .user-commanders {
     display: flex;
     flex-direction: column;
     row-gap: 0.5rem;
-    flex-grow: 1;
     max-height: fit-content;
     padding-bottom: 0.5rem;
 }

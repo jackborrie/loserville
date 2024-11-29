@@ -1,24 +1,64 @@
 <div class="loser">
     <div class="loser-sections">
         <div class="user-section">
-            <app-user [user]="user" *ngIf="user != undefined"></app-user>
-            <button class="button" *ngIf="user != undefined" [disabled]="user.monarch" (click)="takeMonarch()">Take monarch</button>
-            <div class="pull-down">
+            <app-user [user]="user" [isCurrentPlayer]="true" *ngIf="user != undefined"></app-user>
+            <div class="pull-down column">
                 <div class="images bordered">
-                    <div class="row bordered" *ngFor="let image of images">
-                        {{image.split('.')[0]}}
+                    <div class="row bordered image" (mouseenter)="handleHover(i)" *ngFor="let i of commanderImages">
+                        {{i.split('.')[0]}}
                     </div>
+                </div>
+                <div class="commander-image bordered">
+                    <img class="image-popup" *ngIf="image.length > 0" src="http://163.47.239.93:5271/game/image/commander/{{image}}" alt="{{image.split('.')[0]}}">
                 </div>
             </div>
         </div>
         <div class="players-section">
-
+            <div class="players">
+                <div class="player bordered" *ngFor="let player of players">
+                    <app-user [user]="player"/>
+                </div>
+            </div>
+            <div class="pull-left pull-down">
+            </div>
         </div>
         <div class="game-section">
-
+            <div class="bordered game-log-container">
+                <div class="game-log">
+                    <div class="row" *ngFor="let logItem of log">
+                        {{replaceIds(logItem)}}
+                    </div>
+                </div>
+            </div>
+            <div class="order bordered">
+                <div class="bordered row order-item" *ngFor="let player of getPlayersInOrder()">
+                    #{{player.order}}
+                    <div class="pull-right">
+                        {{player.name}}
+                    </div>
+                </div>
+            </div>
             <div class="actions pull-down pull-right">
-                <button class="icon-button red" (click)="restartGame()">R</button>
+                <button class="button" (click)="showAddNewModal = true" title="Upload cards">Upload</button>
+                <button class="button" title="Notable Cards">Notable</button>
+                <button class="button red" (click)="restartGame()">Restart</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="add-modal" *ngIf="showAddNewModal">
+        <div class="modal bordered column">
+            <div class="row">
+                <input type="file" class="file-upload" (change)="handleImageUpload($event)" accept=".png,.jpg">
+            </div>
+            <div class="row">
+                <label for="commander">Player's Commander Card?</label>
+                <input id="commander" type="checkbox" [(ngModel)]="isCommander">
+            </div>
+            <div class="row">
+                <button class="button" (click)="uploadImage()">Do it</button>
             </div>
         </div>
     </div>
 </div>
+
