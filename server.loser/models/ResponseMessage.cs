@@ -12,7 +12,10 @@ public class ResponseMessage
     public User User { get; set; }
     [JsonPropertyName("game_log")]
     public List<string> GameLog { get; set; }
-    [JsonPropertyName("images")]
+    [JsonPropertyName("commander_images")]
     
-    public List<string> Images { get; set; }
+    public List<string> CommanderImages { get; set; }
+    [JsonPropertyName("other_images")]
+    
+    public List<string> OtherImages { get; set; }
 }

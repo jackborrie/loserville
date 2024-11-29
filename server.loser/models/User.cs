@@ -32,6 +32,8 @@ public class User
     [JsonPropertyName("order")]
     public int Order { get; set; }
 
+    [JsonPropertyName("commander_images")] public List<string> CommanderImages { get; set; } = ["Toothy, Imaginary Friend.png"];
+
     public User()
     {
         Id = Guid.NewGuid().ToString();

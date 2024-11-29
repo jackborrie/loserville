@@ -9,21 +9,24 @@ public class SocketService
 {
     private readonly ConcurrentDictionary<string, WebSocket> _sockets = new();
     private readonly ConcurrentDictionary<string, User> _users = new();
-    private static Random rng = new Random();
+    private static Random rng = new();
 
-    private User? _currentMonarch = null;
+    private User? _currentMonarch;
+
+    private int _currentLastOrder;
 
     private List<string> _gameLog =
     [
         "A new game has begun."
     ];
 
-    private List<string> _images = [];
+    private List<string> _commanderImages = [];
 
     public SocketService()
     {
         var contentPath = Environment.CurrentDirectory;
         var path = Path.Combine(contentPath, "Uploads");
+        path = Path.Combine(contentPath, "Commanders");
 
         if (!Directory.Exists(path))
         {
@@ -36,7 +39,7 @@ public class SocketService
         {
             var split = file.Split('\\');
 
-            _images.Add(split[^1]);
+            _commanderImages.Add(split[^1]);
         }
     }
 
@@ -145,10 +148,17 @@ public class SocketService
         return null;
     }
 
-    public async Task AddImage(string filePath)
+    public async Task AddImage(bool commander, string filePath)
     {
-        _images.Add(filePath);
-
+        if (commander)
+        {
+            _commanderImages.Add(filePath);
+        }
+        else
+        {
+            // Add other images.
+        }
+        
         await SendChangesToClients();
     }
 
@@ -195,7 +205,6 @@ public class SocketService
         {
             hasChange = true;
             _users[requestMessage.TargetId].Blue = requestMessage.Blue.Value;
-            _users[requestMessage.TargetId].Colorless = false;
             color = "blue";
 
             add = requestMessage.Blue.HasValue;
@@ -333,9 +342,12 @@ public class SocketService
 
         var idx = 1;
         
+        
+        
         foreach (var o in order)
         {
             _users[o].Order = idx;
+            _currentLastOrder = idx;
 
             idx++;
         }
@@ -363,7 +375,7 @@ public class SocketService
         }
 
         _gameLog.Add(
-            $"[{requestMessage.Id}] removed {(requestMessage.Amount < 0 ? -requestMessage.Amount : requestMessage.Amount)} from {(requestMessage.Id == requestMessage.TargetId ? "themselves" : "[" + requestMessage.TargetId + "]")}");
+            $"[{requestMessage.Id}] {(requestMessage.Amount > 0 ? "added" : "removed")} {(requestMessage.Amount < 0 ? -requestMessage.Amount : requestMessage.Amount)} from {(requestMessage.Id == requestMessage.TargetId ? "themselves" : "[" + requestMessage.TargetId + "]")}");
     }
 
     private async Task<User?> HandleName(WebSocket socket, RequestMessage requestMessage)
@@ -377,11 +389,21 @@ public class SocketService
 
         if (user == null)
         {
+            if (_users.Keys.Count == 4)
+            {
+                var byteMessage = "reject"u8.ToArray();
+                await socket.SendAsync(byteMessage, WebSocketMessageType.Text, true, default);
+                return null;
+            }
+            
+            _currentLastOrder++;
+            
             user = new User
             {
-                Name = requestMessage.Name
+                Name = requestMessage.Name,
+                Order = _currentLastOrder
             };
-
+            
             _users[user.Id] = user;
 
             _gameLog.Add($"[{user.Id}] joined the game.");
@@ -431,7 +453,7 @@ public class SocketService
 
             response.Players = players.ToList();
             response.GameLog = _gameLog;
-            response.Images = _images.ToList();
+            response.CommanderImages = _commanderImages.ToList();
 
             var jsonString = JsonSerializer.Serialize(response);
 
