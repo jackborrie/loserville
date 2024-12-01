@@ -4,6 +4,7 @@ import {webSocket, WebSocketSubject} from "rxjs/webSocket";
 import {Router} from "@angular/router";
 import {ResponseModel} from "../models/response";
 import {User} from "../models/user";
+import {environment} from "../../environments/environment";
 
 @Injectable({
     providedIn: 'root'
@@ -16,6 +17,8 @@ export class WebsocketService {
 
     private websocket: WebSocketSubject<any> | null = null;
 
+    private apiUrl: string;
+
     private players: User[] = [];
 
     private _loggedIn: boolean = false;
@@ -23,10 +26,11 @@ export class WebsocketService {
     constructor(
         private _router: Router
     ) {
+        this.apiUrl = environment.apiUrl;
     }
 
     public attemptJoin(name: string) {
-        this.websocket = webSocket('ws://localhost:5271/game/ws');
+        this.websocket = webSocket(this.apiUrl + 'game/ws');
 
         this.websocket.subscribe ({
             next: (msg: any) => this.handleMessage(msg),

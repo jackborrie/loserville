@@ -1,7 +1,12 @@
 <div class="loser">
     <div class="loser-sections">
         <div class="players-section bordered">
-            <app-user [user]="player" [currentUser]="user != undefined && user.id == player.id" style="display: flex" *ngFor="let player of getAllPlayers()"></app-user>
+            <app-user [user]="player"
+                      [currentUser]="user != undefined && user.id == player.id"
+                      style="display: flex"
+                      *ngFor="let player of getAllPlayers()"
+                      (changeCommanderClick)="handleUserCommanderClick($event)"
+            ></app-user>
         </div>
         <div class="game-section">
             <div class="log bordered">
@@ -20,11 +25,11 @@
                 </div>
             </div>
             <div class="actions pull-down">
-                <button class="button shrinker" (click)="restartGame()">
+                <button class="button shrinker" (click)="showUploadModal = true;">
                     <span class="long">Upload <i class="ph ph-upload"></i></span>
                     <span class="short"><i class="ph ph-upload"></i></span>
                 </button>
-                <button class="button shrinker" (click)="restartGame()">
+                <button class="button shrinker">
                     <span class="long">Cards <i class="ph ph-stack"></i></span>
                     <span class="short"><i class="ph ph-stack"></i></span>
                 </button>
@@ -32,6 +37,36 @@
                     <span class="long">Restart <i class="ph ph-arrow-counter-clockwise"></i></span>
                     <span class="short"><i class="ph ph-arrow-counter-clockwise"></i></span>
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="change-commander-modal" title="Click me to close modal" (click)="saveChanges(); clearModals()" *ngIf="showChangeCommanderModal && currentModalUser != null">
+        <div class="modal bordered commander-modal" title="">
+            <div class="commander-images">
+                <div class="img"*ngFor="let image of commanderImages" (click)="toggleCommander($event, image)">
+                    <img src="{{apiUrl}}game/image/commander/{{image}}" alt="" >
+                    <div class="bordered check" *ngIf="this.currentUserCommanders[image]">
+                        <i class="ph ph-check"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="upload-file-modal" title="Click me to close modal" (click)="clearModals()" *ngIf="showUploadModal">
+        <div class="modal bordered upload-modal" title="">
+            <div class="file-drop" dragDrop (files)="filesDropped($event)">
+                <div class="centered" *ngIf="files.length == 0">Drop your file here!</div>
+                <div class="centered" *ngIf="files.length > 0">
+                    <span *ngFor="let f of files">
+                        {{f.file.name}}
+                    </span>
+                </div>
+            </div>
+            <div class="upload-actions">
+                <button class="button" [disabled]="this.files.length == 0" (click)="uploadImages($event, 'commander')">Commander</button>
+                <button class="button" [disabled]="this.files.length == 0" (click)="uploadImages($event, 'other')">General Cards</button>
             </div>
         </div>
     </div>

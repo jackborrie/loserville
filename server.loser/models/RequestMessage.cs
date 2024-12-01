@@ -31,6 +31,9 @@ public class RequestMessage
     [JsonPropertyName("target_id")]
     public string? TargetId { get; set; }
     
+    [JsonPropertyName("commander_images")]
+    public string[] CommanderImages { get; set; }
+    
     /// <summary>
     /// Used to update which commander damage to update for target. 
     /// </summary>

@@ -1,7 +1,11 @@
-import {Component, Input, OnDestroy, OnInit, output} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit, Output, EventEmitter} from '@angular/core';
 import {User} from "../../models/user";
-import {NgClass, NgForOf, NgIf, NgStyle} from "@angular/common";
+import {NgClass, NgForOf, NgIf, NgOptimizedImage, NgStyle} from "@angular/common";
 import {WebsocketService} from "../../services/websocket.service";
+import {Subscription} from "rxjs";
+import {environment} from "../../../environments/environment";
+import {DomSanitizer, SafeStyle} from "@angular/platform-browser";
+
 
 @Component({
   selector: 'app-user[user]',
@@ -10,7 +14,8 @@ import {WebsocketService} from "../../services/websocket.service";
         NgClass,
         NgStyle,
         NgForOf,
-        NgIf
+        NgIf,
+        NgOptimizedImage
     ],
   templateUrl: './user.component.html',
   styleUrl: './user.component.scss'
@@ -23,27 +28,35 @@ export class UserComponent implements OnInit, OnDestroy {
     @Input()
     public currentUser: boolean = false;
 
+    @Output()
+    public changeCommanderClick = new EventEmitter<User>();
+
     protected players: User[] = [];
 
+    protected apiUrl: string;
+
     protected currentCommanderIdx = 0;
+
+    private _subscription: Subscription = new Subscription();
 
     public constructor(
         private _websocket: WebsocketService
     ) {
+        this.apiUrl = environment.apiUrl;
     }
 
     public genBackground () {
         let gradient = [];if (this.user.red) {
             gradient.push('#f9aa8f');
         }
-        if (this.user.white) {
-            gradient.push('#fffbd5');
-        }
         if (this.user.black) {
             gradient.push('black');
         }
         if (this.user.blue) {
             gradient.push('#aae0fa');
+        }
+        if (this.user.white) {
+            gradient.push('#fffbd5');
         }
         if (this.user.green) {
             gradient.push('#9bd3ae');
@@ -70,7 +83,8 @@ export class UserComponent implements OnInit, OnDestroy {
         } else if (gradient.length == 1) {
             return gradient;
         } else {
-            return 'var(--foreground-0)';
+            // return 'var(--foreground-0)';
+            return ''
         }
     }
 
@@ -108,16 +122,23 @@ export class UserComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
+        this._subscription.unsubscribe();
     }
 
     ngOnInit(): void {
-        this._websocket.$gameState.subscribe(() => {
+        const s = this._websocket.$gameState.subscribe(() => {
             this.players = this._websocket.getAllPlayers().filter(s => s.id != this.user.id);
-        })
+        });
+
+        this._subscription.add(s);
     }
 
     protected takeMonarch () {
         this._websocket.sendMessage({type: 'monarch', target_id: this.user?.id});
+    }
+
+    protected handleChangeCommanderImages () {
+        this.changeCommanderClick.emit(this.user);
     }
 
     protected changeCurrentCommander (by: number) {

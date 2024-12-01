@@ -69,14 +69,9 @@ public class GameController : ControllerBase
         return File(b, "image/jpeg");
     }
 
-    [HttpPost("image")]
-    public async Task<IActionResult> UploadImage(IFormFile file)
+    [HttpPost("image/{type}")]
+    public async Task<IActionResult> UploadImage(string type, IFormFile file)
     {
-        if (file == null)
-        {
-            return BadRequest("Invalid image file");
-        }
-
         var contentPath = Environment.CurrentDirectory;
         
         if (contentPath == null)
@@ -85,6 +80,19 @@ public class GameController : ControllerBase
         }
         
         var path = Path.Combine(contentPath, "Uploads");
+
+        if (type == "commander")
+        {
+            path = Path.Combine(path, "Commanders");
+        } 
+        else if (type == "other")
+        {
+            path = Path.Combine(path, "Other");
+        }
+        else
+        {
+            return BadRequest("Invalid type");
+        }
 
         if (!Directory.Exists(path))
         {
@@ -102,7 +110,7 @@ public class GameController : ControllerBase
         await using var stream = new FileStream(fileNameWithPath, FileMode.Create);
         await file.CopyToAsync(stream);
 
-        this._socketService.AddImage(true, file.FileName);
+        await _socketService.AddImage(type == "commander", file.FileName);
 
         return Ok();
     }

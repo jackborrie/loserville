@@ -6,32 +6,48 @@ import {ResponseModel} from "../../models/response";
 import {Subscription} from "rxjs";
 import {NgForOf, NgIf} from "@angular/common";
 import {UserComponent} from "../../components/user/user.component";
+import {environment} from "../../../environments/environment";
+import {DragDropnDirective, FileHandle} from "../../directives/drag-dropn.directive";
+import {HttpClient} from "@angular/common/http";
 
 @Component({
-  selector: 'app-game',
-  standalone: true,
+    selector: 'app-game',
+    standalone: true,
     imports: [
-        NgIf,
         UserComponent,
-        NgForOf
+        NgForOf,
+        NgIf,
+        DragDropnDirective
     ],
-  templateUrl: './game.component.html',
-  styleUrl: './game.component.scss'
+    templateUrl: './game.component.html',
+    styleUrl: './game.component.scss'
 })
 export class GameComponent implements OnInit, OnDestroy {
 
     protected user: User | undefined;
     protected players: User[] | undefined;
     protected log: string[] = [];
-    protected images: string[] = [];
+    protected commanderImages: string[] = [];
+    protected apiUrl: string;
+
+    protected showChangeCommanderModal: boolean = false;
+    protected currentModalUser: User | null = null;
+    protected showUploadModal: boolean = false;
+    protected showCardModal: boolean = false;
+
+    protected currentUserCommanders: { [key: string]: boolean } = {};
+
+    protected files: FileHandle[] = [];
 
     private _subscriptions: Subscription = new Subscription();
 
+
     public constructor(
         private _websocket: WebsocketService,
-        private _router: Router
+        private _router: Router,
+        private _http: HttpClient
     ) {
-
+        this.apiUrl = environment.apiUrl;
     }
 
     ngOnInit() {
@@ -43,7 +59,7 @@ export class GameComponent implements OnInit, OnDestroy {
         let sub = this._websocket.$gameState.subscribe((data: ResponseModel) => {
             this.user = data.user;
             this.players = data.players;
-            this.images = data.images;
+            this.commanderImages = data.commanderImages;
 
             this.addLog(data.gameLog);
         });
@@ -55,11 +71,11 @@ export class GameComponent implements OnInit, OnDestroy {
         this._subscriptions.unsubscribe();
     }
 
-    protected restartGame () {
+    protected restartGame() {
         this._websocket.sendMessage({type: 'restart'});
     }
 
-    protected getAllPlayers (): User[] {
+    protected getAllPlayers(): User[] {
         let output = [];
 
         if (this.user != null) {
@@ -73,7 +89,7 @@ export class GameComponent implements OnInit, OnDestroy {
         return output;
     }
 
-    protected getUsersInOrder (): User[] {
+    protected getUsersInOrder(): User[] {
         if (this.players == null || this.user == null) {
             return [];
         }
@@ -84,7 +100,75 @@ export class GameComponent implements OnInit, OnDestroy {
         return toSort.sort((a, b) => a.order > b.order ? 1 : -1);
     }
 
-    private addLog (gameLog: string[]) {
+    protected handleUserCommanderClick(user: User) {
+        this.clearModals();
+
+        this.showChangeCommanderModal = true;
+        this.currentModalUser = user;
+        this.currentUserCommanders = {};
+
+        for (let img of user.commanderImages) {
+            this.currentUserCommanders[img] = true;
+        }
+    }
+
+    protected clearModals() {
+        this.showChangeCommanderModal = false;
+        this.currentModalUser = null;
+        this.showCardModal = false;
+        this.showUploadModal = false;
+    }
+
+    protected saveChanges() {
+        if (this.currentModalUser == null) {
+            return;
+        }
+
+        let message = {
+            type: 'commander_change',
+            target_id: this.currentModalUser.id,
+            commander_images: Object.keys(this.currentUserCommanders)
+        }
+
+        this._websocket.sendMessage(message);
+    }
+
+    protected toggleCommander(event: Event, image: string) {
+        event.stopPropagation();
+
+        if (this.currentUserCommanders[image]) {
+            delete this.currentUserCommanders[image];
+        } else {
+            this.currentUserCommanders[image] = true;
+        }
+    }
+
+    protected filesDropped(files: FileHandle[]) {
+        this.files = files;
+    }
+
+    protected uploadImages (event: Event, type: string) {
+        event.stopPropagation();
+        for (let file of this.files) {
+            this.uploadImage(file.file, type);
+        }
+    }
+
+    protected uploadImage (file: File, type: string) {
+        const formData = new FormData();
+
+        formData.append('file', file);
+        this._http.post(this.apiUrl + 'game/image/' + type, formData)
+            .subscribe(() => {
+                this.showUploadModal = false;
+                this.files = [];
+            }, () => {
+                this.showUploadModal = false;
+                this.files = [];
+            })
+    }
+
+    private addLog(gameLog: string[]) {
         this.log = [];
 
         for (let i = gameLog.length - 1; i >= 0; i--) {
@@ -92,7 +176,7 @@ export class GameComponent implements OnInit, OnDestroy {
         }
     }
 
-    private replaceIds (text: string): string {
+    private replaceIds(text: string): string {
         const idRegex = /\[.*?\]/g
 
         if (!idRegex.test(text) || this.user == null || this.players == null) {
@@ -107,4 +191,5 @@ export class GameComponent implements OnInit, OnDestroy {
 
         return text;
     }
+
 }

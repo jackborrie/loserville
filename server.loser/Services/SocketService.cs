@@ -21,13 +21,21 @@ public class SocketService
     ];
 
     private List<string> _commanderImages = [];
+    private List<string> _otherImages = [];
 
     public SocketService()
     {
         var contentPath = Environment.CurrentDirectory;
-        var path = Path.Combine(contentPath, "Uploads");
-        path = Path.Combine(contentPath, "Commanders");
+        var basePath = Path.Combine(contentPath, "Uploads");
 
+        _commanderImages = getImagesFromDirectory(Path.Combine(basePath, "Commanders"));
+        _otherImages = getImagesFromDirectory(Path.Combine(basePath, "Other"));
+    }
+
+    private List<string> getImagesFromDirectory(string path)
+    {
+        List<string> images = [];
+        
         if (!Directory.Exists(path))
         {
             Directory.CreateDirectory(path);
@@ -39,8 +47,10 @@ public class SocketService
         {
             var split = file.Split('\\');
 
-            _commanderImages.Add(split[^1]);
+            images.Add(split[^1]);
         }
+
+        return images;
     }
 
     public async Task HandleWebSocketConnection(WebSocket socket)
@@ -125,6 +135,9 @@ public class SocketService
             case "commander":
                 HandleCommander(requestMessage);
                 break;
+            case "commander_change":
+                HandleCommanderChange(requestMessage);
+                break;
             case "life":
                 if (string.IsNullOrEmpty(requestMessage.Id))
                 {
@@ -148,6 +161,24 @@ public class SocketService
         return null;
     }
 
+    public async Task HandleCommanderChange(RequestMessage requestMessage)
+    {
+        if (requestMessage.Id == null || requestMessage.TargetId == null || requestMessage.CommanderImages.Length == 0)
+        {
+            return;
+        }
+
+        var user = _users[requestMessage.TargetId];
+
+        user.CommanderImages.Clear();
+        
+        user.CommanderImages.AddRange(requestMessage.CommanderImages);
+        
+        _gameLog.Add($"[{requestMessage.Id}] changed [{requestMessage.TargetId}]'s commanders.");
+        
+        await SendChangesToClients();
+    }
+
     public async Task AddImage(bool commander, string filePath)
     {
         if (commander)
@@ -156,7 +187,7 @@ public class SocketService
         }
         else
         {
-            // Add other images.
+            _otherImages.Add(filePath);
         }
         
         await SendChangesToClients();
@@ -186,8 +217,9 @@ public class SocketService
             target.CommanderDamage[requestMessage.CommaderId] = 0;
         }
 
-        _gameLog.Add(
-            $"[{requestMessage.Id}] set {(requestMessage.Id == requestMessage.TargetId ? "their" : "[" + requestMessage.TargetId + "]'s")} commander damage against [{requestMessage.CommaderId}] to {requestMessage.Amount.Value}.");
+        target.Life -= requestMessage.Amount.Value;
+
+        _gameLog.Add( $"[{requestMessage.Id}] set {(requestMessage.Id == requestMessage.TargetId ? "their" : "[" + requestMessage.TargetId + "]'s")} commander damage against [{requestMessage.CommaderId}] to {requestMessage.Amount.Value}.");
     }
 
     private void HandleColorChange(RequestMessage requestMessage)

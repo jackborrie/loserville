@@ -1,6 +1,6 @@
 <div class="user" [ngStyle]="{background: genBackground()}">
     <div class="user-container">
-        <div class="user-info">
+        <div class="user-info bordered">
             <div class="user-title row">
                 <div class="player-order">
                     #{{user.order}}
@@ -9,31 +9,31 @@
             </div>
             <div class="user-data">
                 <div *ngIf="user.monarch" class="monarch">
-                    <img src="assets/svg/crown.svg" alt="monarch crown" height="36" width="36">
+                    <img ngSrc="assets/svg/crown.svg" alt="monarch crown" height="36" width="36">
                 </div>
                 <div class="user-info row center">
-                    <button class="icon-button" (click)="changeLife(-5)" [disabled]="user.life == 0">-5</button>
-                    <button class="icon-button" (click)="changeLife(-1)" [disabled]="user.life == 0">-1</button>
-                    <button class="icon-button" disabled>{{user.life}}</button>
-                    <button class="icon-button" (click)="changeLife(1)">+1</button>
-                    <button class="icon-button" (click)="changeLife(5)">+5</button>
+                    <button class="icon-button life" (click)="changeLife(-5)" [disabled]="user.life == 0">-5</button>
+                    <button class="icon-button life" (click)="changeLife(-1)" [disabled]="user.life == 0">-1</button>
+                    <button class="icon-button life" disabled>{{user.life}}</button>
+                    <button class="icon-button life" (click)="changeLife(1)">+1</button>
+                    <button class="icon-button life" (click)="changeLife(5)">+5</button>
                 </div>
             </div>
         </div>
         <div class="colors">
             <div class="pull-center row">
-                <img ngSrc="assets/svg/red.svg" alt="Red Mana" [width]="20" [height]="20" class="mana" (click)="toggleMana('red')" [ngClass]="{'greyscale': !user.red}">
-                <img ngSrc="assets/svg/white.svg" alt="White Mana" [width]="20" [height]="20" class="mana" (click)="toggleMana('white')" [ngClass]="{'greyscale': !user.white}">
-                <img ngSrc="assets/svg/black.svg" alt="Black Mana" [width]="20" [height]="20" class="mana" (click)="toggleMana('black')" [ngClass]="{'greyscale': !user.black}">
-                <img ngSrc="assets/svg/blue.svg" alt="Blue Mana" [width]="20" [height]="20" class="mana" (click)="toggleMana('blue')" [ngClass]="{'greyscale': !user.blue}">
-                <img ngSrc="assets/svg/green.svg" alt="Green Mana" [width]="20" [height]="20" class="mana" (click)="toggleMana('green')" [ngClass]="{'greyscale': !user.green}">
-                <img ngSrc="assets/svg/colorless.svg" alt="Colorless Mana" [width]="20" [height]="20" class="mana" (click)="toggleMana('colorless')" [ngClass]="{'greyscale': !user.colorless}">
+                <img ngSrc="assets/svg/red.svg" alt="Red Mana" [width]="25" [height]="25" class="mana" (click)="toggleMana('red')" [ngClass]="{'greyscale': !user.red}">
+                <img ngSrc="assets/svg/black.svg" alt="Black Mana" [width]="25" [height]="25" class="mana" (click)="toggleMana('black')" [ngClass]="{'greyscale': !user.black}">
+                <img ngSrc="assets/svg/blue.svg" alt="Blue Mana" [width]="25" [height]="25" class="mana" (click)="toggleMana('blue')" [ngClass]="{'greyscale': !user.blue}">
+                <img ngSrc="assets/svg/white.svg" alt="White Mana" [width]="25" [height]="25" class="mana" (click)="toggleMana('white')" [ngClass]="{'greyscale': !user.white}">
+                <img ngSrc="assets/svg/green.svg" alt="Green Mana" [width]="25" [height]="25" class="mana" (click)="toggleMana('green')" [ngClass]="{'greyscale': !user.green}">
+                <img ngSrc="assets/svg/colorless.svg" alt="Colorless Mana" [width]="25" [height]="25" class="mana" (click)="toggleMana('colorless')" [ngClass]="{'greyscale': !user.colorless}">
             </div>
         </div>
-        <button class="button" *ngIf="user != undefined" [disabled]="user.monarch" (click)="takeMonarch()">{{currentUser  ? 'Take' : 'Assign' }} monarch</button>
+        <button class="button" [disabled]="user.monarch" (click)="takeMonarch()">{{currentUser  ? 'Take' : 'Assign' }} monarch</button>
         <div class="user-commanders bordered" *ngIf="players.length > 0">
             <div class="commander-title row">
-                Commander Damage Against
+                Commander Damage From
             </div>
             <div class="damage row" *ngFor="let player of players">
                 {{player.name}}:
@@ -44,10 +44,10 @@
                 </div>
             </div>
         </div>
-        <button class="button" *ngIf="user != undefined" (click)="takeMonarch()">Change commander</button>
-        <div class="commander-zone pull-down" *ngIf="user != null && user.commanderImages.length > 0">
+        <button class="button" (click)="handleChangeCommanderImages()">Change commander</button>
+        <div class="commander-zone pull-down" *ngIf="user.commanderImages.length > 0">
             <div class="commander">
-                <img src="http://localhost:5271/game/image/commander/{{user.commanderImages[currentCommanderIdx]}}" alt="" width="291">
+                <img src="http://localhost:5271/game/image/commander/{{user.commanderImages[currentCommanderIdx]}}" alt="">
             </div>
             <div class="commander-actions" *ngIf="user.commanderImages.length > 1">
                 <button class="icon-button" [disabled]="currentCommanderIdx <= 0" (click)="changeCurrentCommander(-1)">
