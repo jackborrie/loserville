@@ -54,7 +54,7 @@ public class GameController : ControllerBase
 
         if (!Directory.Exists(path))
         {
-            Directory.CreateDirectory(path);
+             Directory.CreateDirectory(path);
         }
 
         var fileName = Path.Combine(path, name);

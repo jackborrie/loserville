@@ -4,7 +4,7 @@ import {NgClass, NgForOf, NgIf, NgOptimizedImage, NgStyle} from "@angular/common
 import {WebsocketService} from "../../services/websocket.service";
 import {Subscription} from "rxjs";
 import {environment} from "../../../environments/environment";
-import {DomSanitizer, SafeStyle} from "@angular/platform-browser";
+import {StateService} from "../../services/state.service";
 
 
 @Component({
@@ -40,7 +40,8 @@ export class UserComponent implements OnInit, OnDestroy {
     private _subscription: Subscription = new Subscription();
 
     public constructor(
-        private _websocket: WebsocketService
+        private _websocket: WebsocketService,
+        private _state: StateService
     ) {
         this.apiUrl = environment.apiUrl;
     }
@@ -107,6 +108,8 @@ export class UserComponent implements OnInit, OnDestroy {
             type: 'life'
         }
 
+        this._state.addAmount(amount, this.user.id);
+
         this._websocket.sendMessage(lifeMessage);
     }
 
@@ -117,6 +120,8 @@ export class UserComponent implements OnInit, OnDestroy {
             commander_id: commanderId,
             amount: amount
         }
+
+        this._state.addAmount(amount, this.user.id, true);
 
         this._websocket.sendMessage(message);
     }
@@ -152,6 +157,4 @@ export class UserComponent implements OnInit, OnDestroy {
             this.currentCommanderIdx = this.user.commanderImages.length - 1;
         }
     }
-
-
 }

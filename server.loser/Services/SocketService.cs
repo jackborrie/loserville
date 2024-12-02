@@ -219,7 +219,7 @@ public class SocketService
 
         target.Life -= requestMessage.Amount.Value;
 
-        _gameLog.Add( $"[{requestMessage.Id}] set {(requestMessage.Id == requestMessage.TargetId ? "their" : "[" + requestMessage.TargetId + "]'s")} commander damage against [{requestMessage.CommaderId}] to {requestMessage.Amount.Value}.");
+        _gameLog.Add( $"[{requestMessage.Id}] set {(requestMessage.Id == requestMessage.TargetId ? "their" : "[" + requestMessage.TargetId + "]'s")} commander damage from [{requestMessage.CommaderId}] to {requestMessage.Amount.Value}.");
     }
 
     private void HandleColorChange(RequestMessage requestMessage)

@@ -29,7 +29,7 @@
                     <span class="long">Upload <i class="ph ph-upload"></i></span>
                     <span class="short"><i class="ph ph-upload"></i></span>
                 </button>
-                <button class="button shrinker">
+                <button class="button shrinker" disabled>
                     <span class="long">Cards <i class="ph ph-stack"></i></span>
                     <span class="short"><i class="ph ph-stack"></i></span>
                 </button>
@@ -39,6 +39,10 @@
                 </button>
             </div>
         </div>
+    </div>
+
+    <div class="running-total bordered" *ngIf="runningTotal != 0">
+        {{runningTotal}}
     </div>
 
     <div class="change-commander-modal" title="Click me to close modal" (click)="saveChanges(); clearModals()" *ngIf="showChangeCommanderModal && currentModalUser != null">
@@ -55,7 +59,7 @@
     </div>
 
     <div class="upload-file-modal" title="Click me to close modal" (click)="clearModals()" *ngIf="showUploadModal">
-        <div class="modal bordered upload-modal" title="">
+        <div class="modal bordered upload-modal" title="" (click)="$event.stopPropagation()">
             <div class="file-drop" dragDrop (files)="filesDropped($event)">
                 <div class="centered" *ngIf="files.length == 0">Drop your file here!</div>
                 <div class="centered" *ngIf="files.length > 0">
@@ -66,7 +70,7 @@
             </div>
             <div class="upload-actions">
                 <button class="button" [disabled]="this.files.length == 0" (click)="uploadImages($event, 'commander')">Commander</button>
-                <button class="button" [disabled]="this.files.length == 0" (click)="uploadImages($event, 'other')">General Cards</button>
+                <button class="button" [disabled]="true" (click)="uploadImages($event, 'other')">General Cards</button>
             </div>
         </div>
     </div>

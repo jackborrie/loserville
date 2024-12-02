@@ -9,6 +9,7 @@ import {UserComponent} from "../../components/user/user.component";
 import {environment} from "../../../environments/environment";
 import {DragDropnDirective, FileHandle} from "../../directives/drag-dropn.directive";
 import {HttpClient} from "@angular/common/http";
+import {StateService} from "../../services/state.service";
 
 @Component({
     selector: 'app-game',
@@ -39,13 +40,16 @@ export class GameComponent implements OnInit, OnDestroy {
 
     protected files: FileHandle[] = [];
 
+    protected runningTotal: number = 0;
+
     private _subscriptions: Subscription = new Subscription();
 
 
     public constructor(
         private _websocket: WebsocketService,
         private _router: Router,
-        private _http: HttpClient
+        private _http: HttpClient,
+        private _state: StateService
     ) {
         this.apiUrl = environment.apiUrl;
     }
@@ -64,7 +68,13 @@ export class GameComponent implements OnInit, OnDestroy {
             this.addLog(data.gameLog);
         });
 
+        let state = this._state.$onRunningTotalChanged
+            .subscribe(runningTotal => {
+                this.runningTotal = runningTotal;
+            })
+
         this._subscriptions.add(sub);
+        this._subscriptions.add(state);
     }
 
     ngOnDestroy() {
@@ -191,5 +201,4 @@ export class GameComponent implements OnInit, OnDestroy {
 
         return text;
     }
-
 }
