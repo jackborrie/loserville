@@ -7,9 +7,9 @@ public class ResponseMessage
     [JsonPropertyName("id")]
     public string Id { get; set; }
     [JsonPropertyName("players")]
-    public List<User> Players { get; set; }
+    public List<Player> Players { get; set; }
     [JsonPropertyName("user")]
-    public User User { get; set; }
+    public Player Player { get; set; }
     [JsonPropertyName("game_log")]
     public List<string> GameLog { get; set; }
     [JsonPropertyName("commander_images")]

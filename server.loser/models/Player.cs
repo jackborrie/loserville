@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace server.loser.models;
 
-public class User
+public class Player
 {
     [JsonPropertyName("id")]
     public string Id { get; set; }
@@ -35,7 +35,7 @@ public class User
     [JsonPropertyName("commander_images")] 
     public List<string> CommanderImages { get; set; } = [];
 
-    public User()
+    public Player()
     {
         Id = Guid.NewGuid().ToString();
     }

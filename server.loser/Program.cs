@@ -1,3 +1,4 @@
+using server.loser;
 using server.loser.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +9,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<SocketService>();
+
+builder.Services.AddDbContext<LoserContext>();
 
 var app = builder.Build();
 

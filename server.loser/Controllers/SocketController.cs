@@ -10,20 +10,25 @@ public class GameController : ControllerBase
 {
 
     private SocketService _socketService;
+    private LoserContext _context;
 
     private string[] _allowedFileTypes = [".png", ".jpg"];
     
     public GameController (
-        SocketService socketService
-    )
+        SocketService socketService,
+        LoserContext context)
     {
         _socketService = socketService;
+        _context = context;
     }
     
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        return Ok("Hi");
+        var things = _context.Cards.ToList();
+        
+        
+        return Ok(things);
     }
 
     [HttpGet("image/{type}/{name}")]

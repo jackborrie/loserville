@@ -8,10 +8,10 @@ namespace server.loser.Services;
 public class SocketService
 {
     private readonly ConcurrentDictionary<string, WebSocket> _sockets = new();
-    private readonly ConcurrentDictionary<string, User> _users = new();
+    private readonly ConcurrentDictionary<string, Player> _users = new();
     private static Random rng = new();
 
-    private User? _currentMonarch;
+    private Player? _currentMonarch;
 
     private int _currentLastOrder;
 
@@ -410,7 +410,7 @@ public class SocketService
             $"[{requestMessage.Id}] {(requestMessage.Amount > 0 ? "added" : "removed")} {(requestMessage.Amount < 0 ? -requestMessage.Amount : requestMessage.Amount)} from {(requestMessage.Id == requestMessage.TargetId ? "themselves" : "[" + requestMessage.TargetId + "]")}");
     }
 
-    private async Task<User?> HandleName(WebSocket socket, RequestMessage requestMessage)
+    private async Task<Player?> HandleName(WebSocket socket, RequestMessage requestMessage)
     {
         if (string.IsNullOrEmpty(requestMessage?.Name))
         {
@@ -430,7 +430,7 @@ public class SocketService
             
             _currentLastOrder++;
             
-            user = new User
+            user = new Player
             {
                 Name = requestMessage.Name,
                 Order = _currentLastOrder
@@ -455,7 +455,7 @@ public class SocketService
         return user;
     }
 
-    private User? GetUserWithName(string name)
+    private Player? GetUserWithName(string name)
     {
         foreach (var user in _users)
         {
@@ -479,7 +479,7 @@ public class SocketService
 
             var user = _users[key];
 
-            response.User = user;
+            response.Player = user;
 
             var players = _users.Where(u => u.Key != key).Select(u => u.Value);
 
