@@ -80,7 +80,8 @@
                     "builder": "@angular-devkit/build-angular:dev-server",
                     "configurations": {
                         "production": {
-                            "buildTarget": "client.loser:build:production"
+                            "buildTarget": "client.loser:build:production",
+                            "port": 3000
                         },
                         "development": {
                             "buildTarget": "client.loser:build:development"

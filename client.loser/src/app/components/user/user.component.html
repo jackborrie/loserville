@@ -47,7 +47,7 @@
         <button class="button" (click)="handleChangeCommanderImages()">Change commander</button>
         <div class="commander-zone pull-down" *ngIf="user.commanderImages.length > 0">
             <div class="commander">
-                <img src="http://localhost:5271/game/image/commander/{{user.commanderImages[currentCommanderIdx]}}" alt="">
+                <img src="{{apiUrl}}game/image/commander/{{user.commanderImages[currentCommanderIdx]}}" alt="">
             </div>
             <div class="commander-actions" *ngIf="user.commanderImages.length > 1">
                 <button class="icon-button" [disabled]="currentCommanderIdx <= 0" (click)="changeCurrentCommander(-1)">

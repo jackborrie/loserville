@@ -18,7 +18,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors(options => options.AllowAnyMethod().AllowAnyHeader().WithOrigins(new []{"http://localhost:4201", "http://jackborrie.github.io"}).AllowCredentials());
+app.UseCors(options => options.AllowAnyMethod().AllowAnyHeader().WithOrigins(new []{"http://localhost:4201", "http://http://163.47.239.93:3000"}).AllowCredentials());
 
 app.UseHttpsRedirection();
 
