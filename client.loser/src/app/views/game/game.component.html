@@ -41,8 +41,10 @@
         </div>
     </div>
 
-    <div class="running-total bordered" *ngIf="runningTotal != 0">
-        {{runningTotal}}
+    <div class="running-totals" *ngIf="runningTotals.length > 0">
+        <div class="running-total bordered" *ngFor="let runningTotal of runningTotals">
+            {{runningTotal.isCommander ? getCommanderTitle(runningTotal) : getLifeTitle(runningTotal) }}: {{runningTotal.amount}}
+        </div>
     </div>
 
     <div class="change-commander-modal" title="Click me to close modal" (click)="saveChanges(); clearModals()" *ngIf="showChangeCommanderModal && currentModalUser != null">

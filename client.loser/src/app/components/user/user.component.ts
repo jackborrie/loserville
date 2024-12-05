@@ -102,28 +102,11 @@ export class UserComponent implements OnInit, OnDestroy {
     }
 
     protected changeLife (amount: number) {
-        let lifeMessage = {
-            amount: amount,
-            target_id: this.user.id,
-            type: 'life'
-        }
-
-        this._state.addAmount(amount, this.user.id);
-
-        this._websocket.sendMessage(lifeMessage);
+        this._state.addAmount(amount, this.user.id, false);
     }
 
     protected changeCommander (commanderId: string, amount: number) {
-        let message = {
-            type: 'commander',
-            target_id: this.user.id,
-            commander_id: commanderId,
-            amount: amount
-        }
-
-        this._state.addAmount(amount, this.user.id, true);
-
-        this._websocket.sendMessage(message);
+        this._state.addAmount(amount, this.user.id, true, commanderId);
     }
 
     ngOnDestroy(): void {

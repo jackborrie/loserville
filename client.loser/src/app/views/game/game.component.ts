@@ -9,7 +9,7 @@ import {UserComponent} from "../../components/user/user.component";
 import {environment} from "../../../environments/environment";
 import {DragDropnDirective, FileHandle} from "../../directives/drag-dropn.directive";
 import {HttpClient} from "@angular/common/http";
-import {StateService} from "../../services/state.service";
+import {RunningTotal, RunningTotalEvent, StateService} from "../../services/state.service";
 
 @Component({
     selector: 'app-game',
@@ -40,7 +40,7 @@ export class GameComponent implements OnInit, OnDestroy {
 
     protected files: FileHandle[] = [];
 
-    protected runningTotal: number = 0;
+    protected runningTotals: RunningTotalEvent[] = [];
 
     private _subscriptions: Subscription = new Subscription();
 
@@ -70,7 +70,7 @@ export class GameComponent implements OnInit, OnDestroy {
 
         let state = this._state.$onRunningTotalChanged
             .subscribe(runningTotal => {
-                this.runningTotal = runningTotal;
+                this.addUpdateRunningTotal(runningTotal);
             })
 
         this._subscriptions.add(sub);
@@ -200,5 +200,56 @@ export class GameComponent implements OnInit, OnDestroy {
         }
 
         return text;
+    }
+
+    protected getCommanderTitle (runningTotal: RunningTotalEvent) {
+        let target = this.replaceIds('[' + runningTotal.targetId + ']');
+        let commander = this.replaceIds('[' + runningTotal.commanderId + ']');
+
+        return target[0] + ' -> ' + commander[0] + ' commander';
+    }
+
+    protected getLifeTitle (runningTotal: RunningTotalEvent) {
+        let target = this.replaceIds('[' + runningTotal.targetId + ']');
+
+        return target + ' life';
+    }
+
+    protected addUpdateRunningTotal (runningTotal: RunningTotalEvent) {
+        let existing = false;
+
+        for (let idx = 0; idx < this.runningTotals.length; idx++) {
+            let rt = this.runningTotals[idx];
+
+            if (rt.targetId != runningTotal.targetId) {
+                continue;
+            }
+
+            if (runningTotal.isCommander) {
+                if (!rt.isCommander || rt.commanderId != runningTotal.commanderId) {
+                    continue;
+                }
+            } else {
+                if (rt.isCommander) {
+                    continue;
+                }
+            }
+
+            existing = true;
+
+            rt.amount = runningTotal.amount;
+
+            if (runningTotal.amount == 0) {
+                this.runningTotals.splice(idx);
+            }
+
+            break;
+        }
+
+        if (existing) {
+            return;
+        }
+
+        this.runningTotals.push(runningTotal);
     }
 }

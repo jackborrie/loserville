@@ -163,7 +163,7 @@ public class SocketService
 
     public async Task HandleCommanderChange(RequestMessage requestMessage)
     {
-        if (requestMessage.Id == null || requestMessage.TargetId == null || requestMessage.CommanderImages.Length == 0)
+        if (requestMessage.Id == null || requestMessage.TargetId == null)
         {
             return;
         }
@@ -174,7 +174,7 @@ public class SocketService
         
         user.CommanderImages.AddRange(requestMessage.CommanderImages);
         
-        _gameLog.Add($"[{requestMessage.Id}] changed [{requestMessage.TargetId}]'s commanders.");
+        _gameLog.Add($"[{requestMessage.Id}]: [{requestMessage.TargetId}]'s commanders was changed.");
         
         await SendChangesToClients();
     }
@@ -205,21 +205,27 @@ public class SocketService
 
         target.CommanderDamage.TryAdd(requestMessage.CommaderId, 0);
 
-        target.CommanderDamage[requestMessage.CommaderId] += requestMessage.Amount.Value;
+        // target.CommanderDamage[requestMessage.CommaderId] += requestMessage.Amount.Value;
 
-        if (target.CommanderDamage[requestMessage.CommaderId] > 21)
+        var diff = 0;
+
+        if (target.CommanderDamage[requestMessage.CommaderId] + requestMessage.Amount.Value > 21)
         {
-            target.CommanderDamage[requestMessage.CommaderId] = 21;
+            diff = 21 - target.CommanderDamage[requestMessage.CommaderId];
+        } else if (target.CommanderDamage[requestMessage.CommaderId] + requestMessage.Amount < 0)
+        {
+            diff = -target.CommanderDamage[requestMessage.CommaderId];
+        }
+        else
+        {
+            diff = requestMessage.Amount.Value;
         }
 
-        if (target.CommanderDamage[requestMessage.CommaderId] < 0)
-        {
-            target.CommanderDamage[requestMessage.CommaderId] = 0;
-        }
+        target.CommanderDamage[requestMessage.CommaderId] += diff;
 
-        target.Life -= requestMessage.Amount.Value;
-
-        _gameLog.Add( $"[{requestMessage.Id}] set {(requestMessage.Id == requestMessage.TargetId ? "their" : "[" + requestMessage.TargetId + "]'s")} commander damage from [{requestMessage.CommaderId}] to {requestMessage.Amount.Value}.");
+        target.Life -= diff;
+        
+        _gameLog.Add($"[{requestMessage.Id}]: [{requestMessage.CommaderId}] {(requestMessage.Amount > 0 ? "dealt" : "undid")} {(requestMessage.Amount < 0 ? -requestMessage.Amount : requestMessage.Amount)} commander damage to [{requestMessage.TargetId}]");
     }
 
     private void HandleColorChange(RequestMessage requestMessage)
@@ -305,25 +311,8 @@ public class SocketService
         {
             return;
         }
-
-        if (color == "colorless")
-        {
-            _gameLog.Add(
-                $"[{requestMessage.Id}] {(add ? "assigned" : "unassigned")} {(requestMessage.Id == requestMessage.TargetId ? "themself" : "[" + requestMessage.TargetId + "]")} to colorless");
-        }
-        else
-        {
-            var outLog = $"[{requestMessage.Id}] {(add ? "added" : "removed")} {color}";
-
-            if (requestMessage.Id != requestMessage.TargetId)
-            {
-                outLog += $" to [{requestMessage.TargetId}]'s colors";
-            }
-
-            outLog += ".";
-
-            _gameLog.Add(outLog);
-        }
+        
+        _gameLog.Add($"[{requestMessage.Id}]: [{requestMessage.TargetId}]'s colors have been updated.");
     }
 
     private void HandleMonarch(RequestMessage requestMessage)
@@ -388,7 +377,7 @@ public class SocketService
 
         _gameLog =
         [
-            $"[{requestMessage.Id}] started a new game."
+            $"[{requestMessage.Id}]: Started a new game."
         ];
     }
 
@@ -406,8 +395,7 @@ public class SocketService
             _users[requestMessage.TargetId].Life = 0;
         }
 
-        _gameLog.Add(
-            $"[{requestMessage.Id}] {(requestMessage.Amount > 0 ? "added" : "removed")} {(requestMessage.Amount < 0 ? -requestMessage.Amount : requestMessage.Amount)} from {(requestMessage.Id == requestMessage.TargetId ? "themselves" : "[" + requestMessage.TargetId + "]")}");
+        _gameLog.Add($"[{requestMessage.Id}]: {(requestMessage.Amount > 0 ? "added" : "removed")} life {(requestMessage.Amount < 0 ? -requestMessage.Amount : requestMessage.Amount)} {(requestMessage.Amount > 0 ? "to" : "from")} [{requestMessage.TargetId}]'s life total");
     }
 
     private async Task<User?> HandleName(WebSocket socket, RequestMessage requestMessage)
